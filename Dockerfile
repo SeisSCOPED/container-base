@@ -163,6 +163,7 @@ RUN set -x && \
     npm cache clean --force && \
     jupyter lab clean && \
     rm -rf "/home/${NB_USER}/.cache/yarn" && \
+    rm -rf "/home/${NB_USER}/.npm" && \
     docker-clean
 
 # Install all OS dependencies for fully functional notebook server
@@ -189,5 +190,9 @@ RUN apt-get update --yes && \
     docker-clean
 
 # Configure container startup
-ENTRYPOINT ["tini", "-g", "--", "/entry.sh"]
+ENTRYPOINT ["tini", "-g", "--", "/entry.sh", "/usr/bin/startup.sh"]
 
+COPY extras/startup.sh /usr/bin/
+RUN chmod +x /usr/bin/startup.sh
+
+WORKDIR "${HOME}"
