@@ -190,7 +190,7 @@ RUN apt-get update --yes && \
     docker-clean
 
 # Configure container startup
-ENTRYPOINT ["tini", "-g", "--", "/entry.sh", "/usr/bin/startup.sh"]
+ENTRYPOINT ["tini", "-s", "-g", "--", "/entry.sh", "/usr/bin/startup.sh"]
 
 COPY extras/startup.sh /usr/bin/
 RUN chmod +x /usr/bin/startup.sh
