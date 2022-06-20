@@ -1,0 +1,8 @@
+---
+SCOPED:
+- name: MsPASS
+  status: containerized
+- name: MTUQ
+  status: containerized
+- name: Pyatoa
+  status: containerized
