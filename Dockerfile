@@ -189,7 +189,23 @@ RUN apt-get update --yes && \
     texlive-plain-generic && \
     docker-clean
 
+########################################
+# Install PySEP
+########################################
+
+RUN cd /home/scoped \
+    && git clone https://github.com/uafgeotools/pysep.git
+    
+RUN cd /home/scoped/pysep \
+    && conda install --file requirements.txt
+    && pip install -e . \
+    && docker-clean
+
+
+########################################
 # Configure container startup
+########################################
+
 ENTRYPOINT ["tini", "-s", "-g", "--", "/entry.sh", "/usr/bin/startup.sh"]
 
 COPY extras/startup.sh /usr/bin/
