@@ -6,3 +6,5 @@ SCOPED:
   status: containerized
 - name: Pyatoa
   status: containerized
+- name: Specufex
+  status: containerized
