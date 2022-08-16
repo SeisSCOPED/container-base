@@ -9,3 +9,7 @@ by replacing the `NAME_OF_YOUR_APP` string and adding the following markdown cod
 ```
 ![SCOPED](https://img.shields.io/endpoint?url=https://runkit.io/wangyinz/scoped/branches/master/NAME_OF_YOUR_APP)
 ```
+If you want to turn the badge into a link to the SCOPED container page, you may add the url in the standard markdown syntax:
+```
+[![SCOPED](https://img.shields.io/endpoint?url=https://runkit.io/wangyinz/scoped/branches/master/NAME_OF_YOUR_APP)](https://github.com/SeisSCOPED/container/pkgs/container/NAME_OF_YOUR_APP)
+```
