@@ -8,3 +8,7 @@ SCOPED:
   status: containerized
 - name: Specufex
   status: containerized
+- name: adjTomo
+  status: containerized
+- name: pysep
+  status: containerized
