@@ -60,9 +60,9 @@ RUN curl -k -L https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-P
 RUN echo deb https://apt.repos.intel.com/mpi all main > /etc/apt/sources.list.d/intel-mpi.list
 RUN apt-get update \
     && apt-get install -y intel-mpi-20${MAJV}${BV}-102 \
-    && rm -r /opt/intel/compilers_and_libraries/linux/mpi/intel64/lib/debug \
-             /opt/intel/compilers_and_libraries/linux/mpi/intel64/lib/debug_mt \
-             /opt/intel/compilers_and_libraries/linux/mpi/intel64/lib/release_mt \
+    && rm -r /opt/intel/compilers_and_libraries/linux/mpi/intel64/lib/debug/libmpi.a \
+             /opt/intel/compilers_and_libraries/linux/mpi/intel64/lib/debug_mt/libmpi.a \
+             /opt/intel/compilers_and_libraries/linux/mpi/intel64/lib/release_mt/libmpi.a \
     && docker-clean
 
 # Configure environment for impi
