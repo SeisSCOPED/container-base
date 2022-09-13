@@ -36,7 +36,7 @@ RUN curl -k -L https://linux.mellanox.com/public/repo/mlnx_ofed/latest/ubuntu18.
 RUN apt-get update && \
     apt-get install -yq --no-install-recommends gfortran bison libibverbs-dev libnuma-dev \
 	libibmad-dev libibumad-dev librdmacm-dev libxml2-dev ca-certificates libfabric-dev \
-        mlnx-ofed-hpc ucx \
+        mlnx-ofed-basic ucx \
 	&& docker-clean
 
 # Install PSM2
@@ -60,11 +60,14 @@ RUN curl -k -L https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-P
 RUN echo deb https://apt.repos.intel.com/mpi all main > /etc/apt/sources.list.d/intel-mpi.list
 RUN apt-get update \
     && apt-get install -y intel-mpi-20${MAJV}${BV}-102 \
+    && rm -r /opt/intel/compilers_and_libraries/linux/mpi/intel64/lib/debug \
+             /opt/intel/compilers_and_libraries/linux/mpi/intel64/lib/debug_mt \
+             /opt/intel/compilers_and_libraries/linux/mpi/intel64/lib/release_mt \
     && docker-clean
 
 # Configure environment for impi
 ENV MPIVARS_SCRIPT=/opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpivars.sh \
-    I_MPI_LIBRARY_KIND=release_mt \
+    I_MPI_LIBRARY_KIND=release \
     I_MPI_OFI_LIBRARY_INTERNAL=1 \
     I_MPI_REMOVED_VAR_WARNING=0 \
     I_MPI_VAR_CHECK_SPELLING=0 \
@@ -72,7 +75,7 @@ ENV MPIVARS_SCRIPT=/opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpiv
 RUN sed -i 's~bin/sh~bin/bash~' $MPIVARS_SCRIPT \
     && sed -i '/bin\/bash/a \[ "${IMPI_LOADED}" == "1" \] && return' $MPIVARS_SCRIPT \
     && echo "export IMPI_LOADED=1" >> $MPIVARS_SCRIPT \
-    && echo -e '#!/bin/bash\n. /opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpivars.sh -ofi_internal=1 release_mt\nexec "${@}"' > /entry.sh \
+    && echo -e '#!/bin/bash\n. /opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpivars.sh -ofi_internal=1 release\nexec "${@}"' > /entry.sh \
     && chmod +x /entry.sh
 
 # Add hello world
