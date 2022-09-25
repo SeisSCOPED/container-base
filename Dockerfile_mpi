@@ -1,0 +1,111 @@
+# Use Ubuntu as the base
+FROM ubuntu:20.04
+
+########################################
+# Configure ENV
+########################################
+
+SHELL ["/bin/bash", "-c"]
+
+ENV SHELL=/bin/bash
+ENV DEBIAN_FRONTEND=noninteractive
+
+########################################
+# Add docker-clean
+########################################
+
+ADD extras/docker-clean /usr/bin/docker-clean
+RUN chmod a+rx /usr/bin/docker-clean && docker-clean
+
+########################################
+# Necessary packages
+########################################
+
+RUN apt-get update --yes \
+	&& apt-get install -yq --no-install-recommends curl wget build-essential locales tini\
+	&& docker-clean \
+	&& echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
+	&& locale-gen
+
+########################################
+# Install mpi
+########################################
+
+# necessities and IB stack
+RUN apt-get update && apt-get install -yq gnupg2 ca-certificates
+RUN curl -k -L http://www.mellanox.com/downloads/ofed/RPM-GPG-KEY-Mellanox | apt-key add -
+RUN curl -k -L https://linux.mellanox.com/public/repo/mlnx_ofed/latest/ubuntu18.04/mellanox_mlnx_ofed.list > /etc/apt/sources.list.d/mlnx_ofed.list
+RUN apt-get update && \
+    apt-get install -yq --no-install-recommends gfortran bison libibverbs-dev libnuma-dev \
+	libibmad-dev libibumad-dev librdmacm-dev libxml2-dev ca-certificates libfabric-dev \
+        mlnx-ofed-basic ucx \
+	&& docker-clean
+
+# Install PSM2
+ARG PSM=PSM2
+ARG PSMV=11.2.78
+ARG PSMD=opa-psm2-${PSM}_${PSMV}
+
+RUN curl -L https://github.com/intel/opa-psm2/archive/${PSM}_${PSMV}.tar.gz | tar -xzf - \
+    && cd ${PSMD} \
+    && make PSM_AVX=1 -j $(nproc --all 2>/dev/null || echo 2) \
+    && make LIBDIR=/usr/lib/x86_64-linux-gnu install \
+    && cd ../ && rm -rf ${PSMD}
+
+# Install impi-19.0.7
+ARG MAJV=19
+ARG MINV=0
+ARG BV=.7
+ARG DIR=intel${MAJV}-${MAJV}.${MINV}${BV}
+
+RUN curl -k -L https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB | apt-key add -
+RUN echo deb https://apt.repos.intel.com/mpi all main > /etc/apt/sources.list.d/intel-mpi.list
+RUN apt-get update \
+    && apt-get install -y intel-mpi-20${MAJV}${BV}-102 \
+    && rm -r /opt/intel/compilers_and_libraries/linux/mpi/intel64/lib/debug/libmpi.a \
+             /opt/intel/compilers_and_libraries/linux/mpi/intel64/lib/debug_mt/libmpi.a \
+             /opt/intel/compilers_and_libraries/linux/mpi/intel64/lib/release_mt/libmpi.a \
+    && docker-clean
+
+# Configure environment for impi
+ENV MPIVARS_SCRIPT=/opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpivars.sh \
+    I_MPI_LIBRARY_KIND=release \
+    I_MPI_OFI_LIBRARY_INTERNAL=1 \
+    I_MPI_REMOVED_VAR_WARNING=0 \
+    I_MPI_VAR_CHECK_SPELLING=0 \
+    BASH_ENV=/opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpivars.sh
+RUN sed -i 's~bin/sh~bin/bash~' $MPIVARS_SCRIPT \
+    && sed -i '/bin\/bash/a \[ "${IMPI_LOADED}" == "1" \] && return' $MPIVARS_SCRIPT \
+    && echo "export IMPI_LOADED=1" >> $MPIVARS_SCRIPT \
+    && echo -e '#!/bin/bash\n. /opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpivars.sh -ofi_internal=1 release\nexec "${@}"' > /entry.sh \
+    && chmod +x /entry.sh
+
+# Add hello world
+ADD extras/hello.c /tmp/hello.c
+RUN mpicc /tmp/hello.c -o /usr/local/bin/hellow \
+    && rm /tmp/hello.c \
+    && docker-clean
+
+# Build benchmark programs
+ADD extras/install_benchmarks.sh /tmp/install_benchmarks.sh
+RUN bash /tmp/install_benchmarks.sh
+
+# Configure environment
+ENV SHELL=/bin/bash \
+    NB_USER=scoped \
+    LC_ALL=en_US.UTF-8 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8
+
+ENV HOME="/home/${NB_USER}"
+
+########################################
+# Configure container startup
+########################################
+
+ENTRYPOINT ["tini", "-s", "-g", "--", "/entry.sh", "/usr/bin/startup.sh"]
+
+COPY extras/empty_startup.sh /usr/bin/startup.sh
+RUN chmod +x /usr/bin/startup.sh
+
+WORKDIR "${HOME}"
