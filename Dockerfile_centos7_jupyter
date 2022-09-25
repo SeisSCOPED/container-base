@@ -1,0 +1,131 @@
+# Use Ubuntu as the base
+FROM centos:centos7
+
+########################################
+# Configure ENV
+########################################
+
+SHELL ["/bin/bash", "-c"]
+
+ENV SHELL=/bin/bash
+
+########################################
+# Add docker-clean
+########################################
+
+ADD extras/docker-clean /usr/bin/docker-clean
+RUN chmod a+rx /usr/bin/docker-clean && docker-clean
+
+########################################
+# Necessary packages
+########################################
+
+RUN yum -y groupinstall "Development tools"\
+	&& yum -y install curl wget which \
+	&& docker-clean
+
+########################################
+# Install JupyterLab
+########################################
+
+RUN yum -y install epel-release && \
+    yum -y install \
+    ca-certificates \
+    # - bzip2 is necessary to extract the micromamba executable.
+    bzip2 \
+    liberation-fonts \
+    # - pandoc is used to convert notebooks to html files
+    #   it's not present in arm64 ubuntu image, so we install it here
+    pandoc \
+    sudo \
+    # - tini is installed as a helpful container entrypoint that reaps zombie
+    #   processes and such of the actual executable we want to start, see
+    #   https://github.com/krallin/tini#why-tini for details.
+    tini && \
+    docker-clean
+    
+# Configure environment
+ENV CONDA_DIR=/opt/conda \
+    NB_USER=scoped \
+    LC_ALL=en_US.UTF-8 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8
+ENV PATH="${CONDA_DIR}/bin:${PATH}" \
+    HOME="/home/${NB_USER}"
+
+# Pin python version here, or set it to "default"
+ARG PYTHON_VERSION=3.10
+
+COPY extras/initial-condarc "${CONDA_DIR}/.condarc"
+WORKDIR /tmp
+RUN set -x && \
+    arch=$(uname -m) && \
+    if [ "${arch}" = "x86_64" ]; then \
+        # Should be simpler, see <https://github.com/mamba-org/mamba/issues/1437>
+        arch="64"; \
+    fi && \
+    wget -qO /tmp/micromamba.tar.bz2 \
+        "https://micromamba.snakepit.net/api/micromamba/linux-${arch}/latest" && \
+    tar -xvjf /tmp/micromamba.tar.bz2 --strip-components=1 bin/micromamba && \
+    rm /tmp/micromamba.tar.bz2 && \
+    PYTHON_SPECIFIER="python=${PYTHON_VERSION}" && \
+    if [[ "${PYTHON_VERSION}" == "default" ]]; then PYTHON_SPECIFIER="python"; fi && \
+    if [ "${arch}" == "aarch64" ]; then \
+        # Prevent libmamba from sporadically hanging on arm64 under QEMU
+        # <https://github.com/mamba-org/mamba/issues/1611>
+        # We don't use `micromamba config set` since it instead modifies ~/.condarc.
+        echo "extract_threads: 1" >> "${CONDA_DIR}/.condarc"; \
+    fi && \
+    # Install the packages
+    ./micromamba install \
+        --root-prefix="${CONDA_DIR}" \
+        --prefix="${CONDA_DIR}" \
+        --yes \
+        "${PYTHON_SPECIFIER}" \
+        'mamba' \
+        'notebook' \
+        'jupyterhub' \
+        'jupyterlab' && \
+    rm micromamba && \
+    # Pin major.minor version of python
+    mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
+    jupyter notebook --generate-config && \
+    mamba clean --all -f -y && \
+    npm cache clean --force && \
+    jupyter lab clean && \
+    rm -rf "/home/${NB_USER}/.cache/yarn" && \
+    rm -rf "/home/${NB_USER}/.npm" && \
+    docker-clean
+
+# Install all OS dependencies for fully functional notebook server
+RUN yum -y install \
+    # Common useful utilities
+    git \
+    nano-tiny \
+    tzdata \
+    unzip \
+    vim-tiny \
+    # Inkscape is installed to be able to convert SVG files
+    inkscape \
+    # git-over-ssh
+    openssh-client \
+    # less is needed to run help in R
+    # see: https://github.com/jupyter/docker-stacks/issues/1588
+    less \
+    # nbconvert dependencies
+    # https://nbconvert.readthedocs.io/en/latest/install.html#installing-tex
+    texlive-xetex \
+    texlive-collection-fontsrecommended \
+    texlive-plain && \
+    docker-clean
+
+########################################
+# Configure container startup
+########################################
+
+ENTRYPOINT ["tini", "-s", "-g", "--", "/usr/bin/startup.sh"]
+
+COPY extras/startup.sh /usr/bin/
+RUN chmod +x /usr/bin/startup.sh
+
+WORKDIR "${HOME}"
