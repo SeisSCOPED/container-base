@@ -46,7 +46,11 @@ jobs:
         with:
           path: |
             /tmp/.buildx-cache
+            /tmp/.buildx-cache-mpi
+            /tmp/.buildx-cache-jupyterlab
             /tmp/.buildx-cache-centos7
+            /tmp/.buildx-cache-centos7-mpi
+            /tmp/.buildx-cache-centos7-jupyterlab
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
@@ -95,6 +99,66 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache-centos7
           cache-to: type=local,dest=/tmp/.buildx-cache-centos7-new
+      
+      # Build and push centos MPI image
+      - name: Build and push Centos MPI image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          file: Dockerfile_mpi
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ${{ env.IMAGE_NAME }}:centos7_mpi
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:centos7_mpi
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=local,src=/tmp/.buildx-cache-centos7-mpi
+          cache-to: type=local,dest=/tmp/.buildx-cache-centos7-mpi-new
+      
+      # Build and push centos JupyterLab image
+      - name: Build and push Centos JupyterLab image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          file: Dockerfile_jupyter
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ${{ env.IMAGE_NAME }}:centos7_jupyterlab
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:centos7_jupyterlab
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=local,src=/tmp/.buildx-cache-centos7-jupyterlab
+          cache-to: type=local,dest=/tmp/.buildx-cache-centos7-jupyterlab-new
+      
+      # Build and push ubuntu MPI image
+      - name: Build and push Ubuntu MPI image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          file: Dockerfile_mpi
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ${{ env.IMAGE_NAME }}:ubuntu20.04_mpi
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:ubuntu20.04_mpi
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=local,src=/tmp/.buildx-cache-mpi
+          cache-to: type=local,dest=/tmp/.buildx-cache-mpi-new
+      
+      # Build and push ubuntu JupyterLab image
+      - name: Build and push Ubuntu JupyterLab image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          file: Dockerfile_jupyter
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ${{ env.IMAGE_NAME }}:ubuntu20.04_jupyterlab
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:ubuntu20.04_jupyterlab
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=local,src=/tmp/.buildx-cache-jupyterlab
+          cache-to: type=local,dest=/tmp/.buildx-cache-jupyterlab-new
 
       # Build and push ubuntu image
       - name: Build and push Ubuntu image
@@ -115,6 +179,10 @@ jobs:
 
       - name: Move cache
         run: |
-          rm -rf /tmp/.buildx-cache /tmp/.buildx-cache-centos7
+          rm -rf /tmp/.buildx-cache /tmp/.buildx-cache-centos7 /tmp/.buildx-cache-centos7-mpi /tmp/.buildx-cache-centos7-jupyterlab /tmp/.buildx-cache-mpi /tmp/.buildx-cache-jupyterlab
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
           mv /tmp/.buildx-cache-centos7-new /tmp/.buildx-cache-centos7
+          mv /tmp/.buildx-cache-mpi-new /tmp/.buildx-cache-mpi
+          mv /tmp/.buildx-cache-centos7-mpi-new /tmp/.buildx-cache-centos7-mpi
+          mv /tmp/.buildx-cache-jupyterlab-new /tmp/.buildx-cache-jupyterlab
+          mv /tmp/.buildx-cache-centos7-jupyterlab-new /tmp/.buildx-cache-centos7-jupyterlab
