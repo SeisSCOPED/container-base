@@ -109,7 +109,7 @@ jobs:
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: .
-          file: Dockerfile_centos_mpi
+          file: Dockerfile_centos7_mpi
           platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
@@ -124,7 +124,7 @@ jobs:
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: .
-          file: Dockerfile_centos_jupyter
+          file: Dockerfile_centos7_jupyter
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
