@@ -523,6 +523,19 @@ jobs:
           rm -rf /tmp/.buildx-cache 
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
+  send_trigger:
+    runs-on: ubuntu-latest
+    needs: [build-centos, build-centos-mpi, build-centos-jupyterlab, build-ubuntu, build-ubuntu-mpi, build-ubuntu-jupyterlab]
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PAT_TOKEN }}
+          script: |
+            await github.rest.repos.createDispatchEvent({
+              owner: 'SeisSCOPED',
+              repo: 'template',
+              event_type: 'rebuild_container'
+            })
 
       
 
