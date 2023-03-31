@@ -1,5 +1,5 @@
 # Use Ubuntu as the base
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ########################################
 # Configure ENV
@@ -41,7 +41,7 @@ RUN apt-get update && \
 
 # Install PSM2
 ARG PSM=PSM2
-ARG PSMV=11.2.78
+ARG PSMV=11.2.230
 ARG PSMD=opa-psm2-${PSM}_${PSMV}
 
 RUN curl -L https://github.com/intel/opa-psm2/archive/${PSM}_${PSMV}.tar.gz | tar -xzf - \
@@ -190,7 +190,6 @@ RUN apt-get update --yes && \
     texlive-xetex \
     texlive-fonts-recommended \
     texlive-plain-generic && \
-    apt remove -y python2.7 python3.8 && apt autoremove -y && \
     docker-clean
 
 ########################################

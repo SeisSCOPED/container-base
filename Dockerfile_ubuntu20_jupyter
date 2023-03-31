@@ -1,5 +1,5 @@
 # Use Ubuntu as the base
-FROM ubuntu:22.04
+FROM ubuntu:20.04
 
 ########################################
 # Configure ENV
@@ -127,6 +127,7 @@ RUN apt-get update --yes && \
     texlive-xetex \
     texlive-fonts-recommended \
     texlive-plain-generic && \
+    apt remove -y python2.7 python3.8 && apt autoremove -y && \
     docker-clean
 
 ########################################
