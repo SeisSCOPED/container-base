@@ -127,6 +127,7 @@ RUN apt-get update --yes && \
     texlive-xetex \
     texlive-fonts-recommended \
     texlive-plain-generic && \
+    apt remove -y python3.10 && apt autoremove -y && \
     docker-clean
 
 ########################################
