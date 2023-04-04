@@ -553,9 +553,9 @@ jobs:
         with:
           path: |
             /tmp/.buildx-cache-ubuntu20-mpi
-          key: ${{ runner.os }}-buildx-ubuntumpi-${{ github.sha }}
+          key: ${{ runner.os }}-buildx-ubuntu20mpi-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-buildx-ubuntumpi-
+            ${{ runner.os }}-buildx-ubuntu20mpi-
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
@@ -587,8 +587,8 @@ jobs:
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
 
-      # Build and push ubuntu MPI image
-      - name: Build and push Ubuntu MPI image
+      # Build and push ubuntu20 MPI image
+      - name: Build and push Ubuntu20 MPI image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: .
@@ -636,9 +636,9 @@ jobs:
         with:
           path: |
             /tmp/.buildx-cache-ubuntu20-jupyterlab
-          key: ${{ runner.os }}-buildx-ubuntujupyterlab-${{ github.sha }}
+          key: ${{ runner.os }}-buildx-ubuntu20jupyterlab-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-buildx-ubuntujupyterlab-
+            ${{ runner.os }}-buildx-ubuntu20jupyterlab-
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
@@ -670,8 +670,8 @@ jobs:
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
 
-      # Build and push ubuntu JupyterLab image
-      - name: Build and push Ubuntu JupyterLab image
+      # Build and push ubuntu20 JupyterLab image
+      - name: Build and push Ubuntu20 JupyterLab image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: .
@@ -719,9 +719,9 @@ jobs:
         with:
           path: |
             /tmp/.buildx-cache-ubuntu20
-          key: ${{ runner.os }}-buildx-ubuntu-${{ github.sha }}
+          key: ${{ runner.os }}-buildx-ubuntu20-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-buildx-ubuntu-
+            ${{ runner.os }}-buildx-ubuntu20-
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
@@ -753,8 +753,8 @@ jobs:
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
 
-      # Build and push ubuntu image
-      - name: Build and push Ubuntu image
+      # Build and push ubuntu20 image
+      - name: Build and push Ubuntu20 image
         id: build-and-push
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
