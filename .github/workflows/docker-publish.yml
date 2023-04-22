@@ -763,7 +763,6 @@ jobs:
           platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ${{ steps.meta.outputs.tags }}
             ${{ env.IMAGE_NAME }}:ubuntu20.04
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:ubuntu20.04
           labels: ${{ steps.meta.outputs.labels }}
