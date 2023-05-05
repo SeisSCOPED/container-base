@@ -12,3 +12,5 @@ SCOPED:
   status: containerized
 - name: pysep
   status: containerized
+- name: SeisSol
+  status: containerized
