@@ -56,10 +56,11 @@ ARG MINV=0
 ARG BV=.7
 ARG DIR=intel${MAJV}-${MAJV}.${MINV}${BV}
 
+RUN echo "Acquire::AllowInsecureRepositories "true";" > /etc/apt/apt.conf
 RUN curl -k -L https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB | apt-key add -
 RUN echo deb https://apt.repos.intel.com/mpi all main > /etc/apt/sources.list.d/intel-mpi.list
 RUN apt-get update \
-    && apt-get install -y intel-mpi-20${MAJV}${BV}-102 \
+    && apt-get install -y --allow-unauthenticated intel-mpi-20${MAJV}${BV}-102 \
     && rm -r /opt/intel/compilers_and_libraries/linux/mpi/intel64/lib/debug/libmpi.a \
              /opt/intel/compilers_and_libraries/linux/mpi/intel64/lib/debug_mt/libmpi.a \
              /opt/intel/compilers_and_libraries/linux/mpi/intel64/lib/release_mt/libmpi.a \

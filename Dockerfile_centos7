@@ -29,7 +29,7 @@ RUN yum -y groupinstall "Development tools"\
 ########################################
 
 # necessities and IB stack
-RUN yum-config-manager --add-repo https://linux.mellanox.com/public/repo/mlnx_ofed/latest/rhel7.8/mellanox_mlnx_ofed.repo
+RUN yum-config-manager --add-repo https://linux.mellanox.com/public/repo/mlnx_ofed/5.0-2.1.8.0/rhel7.8/mellanox_mlnx_ofed.repo
 RUN yum -y install libgfortran libibmad-devel libibumad libibverbs-devel librdmacm libxml2-devel ca-certificates \
     libpsm2-compat libpsm2 libpsm2-devel \
     numactl-libs mlnx-ofa_kernel mlnx-ofa_kernel-devel mlnx-ofa_kernel-modules \
