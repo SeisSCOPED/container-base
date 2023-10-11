@@ -32,7 +32,7 @@ RUN apt-get update --yes \
 # necessities and IB stack
 RUN apt-get update && apt-get install -yq gnupg2 ca-certificates
 RUN curl -k -L http://www.mellanox.com/downloads/ofed/RPM-GPG-KEY-Mellanox | apt-key add -
-RUN curl -k -L https://linux.mellanox.com/public/repo/mlnx_ofed/latest/ubuntu18.04/mellanox_mlnx_ofed.list > /etc/apt/sources.list.d/mlnx_ofed.list
+RUN curl -k -L https://linux.mellanox.com/public/repo/mlnx_ofed/5.0-2.1.8.0/ubuntu18.04/mellanox_mlnx_ofed.list > /etc/apt/sources.list.d/mlnx_ofed.list
 RUN apt-get update && \
     apt-get install -yq --no-install-recommends gfortran bison libibverbs-dev libnuma-dev \
 	libibmad-dev libibumad-dev librdmacm-dev libxml2-dev ca-certificates libfabric-dev \
