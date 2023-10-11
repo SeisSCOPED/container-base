@@ -17,7 +17,7 @@ if [ $# -eq 0 ]; then
     JUPYTER_PWD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 20 | head -n 1)
     echo "Created reverse ports on Stampede2 logins"
     printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-    echo "Welcome to the MsPASS for Tapis" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols); echo -e "\n"
+    echo "Welcome to Tapis interactive" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols); echo -e "\n"
     echo  "The Link below will open a MsPASS Jupyter Notebook" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols); echo -e "\n"
     echo "http://frontera.tacc.utexas.edu:$LOGIN_PORT/lab?token=$JUPYTER_PWD" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols); echo -e "\n"
     printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' - |  head -c $(tput cols);echo -e "\n"
