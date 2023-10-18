@@ -43,8 +43,8 @@ ARG MINV=0
 ARG BV=.7
 ARG DIR=intel${MAJV}-${MAJV}.${MINV}${BV}
 
-RUN yum-config-manager -y --add-repo https://yum.repos.intel.com/setup/intelproducts.repo \
-    && yum install -y intel-mpi-20${MAJV}${BV}-102 \
+ADD extras/intelproducts.repo /etc/yum.repos.d/intelproducts.repo
+RUN yum install -y intel-mpi-20${MAJV}${BV}-102 \
     && rm -r /opt/intel/compilers_and_libraries/linux/mpi/intel64/lib/debug/libmpi.a \
              /opt/intel/compilers_and_libraries/linux/mpi/intel64/lib/debug_mt/libmpi.a \
              /opt/intel/compilers_and_libraries/linux/mpi/intel64/lib/release_mt/libmpi.a \
