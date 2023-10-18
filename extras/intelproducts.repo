@@ -1,0 +1,44 @@
+[intelpython]
+name=Intel(R) Distribution for Python* for Linux OS
+baseurl=https://yum.repos.intel.com/intelpython
+enabled=1
+gpgcheck=0
+repo_gpgcheck=0
+
+[intel-daal-repo]
+name=Intel(R) Data Analytics Acceleration Library
+baseurl=https://yum.repos.intel.com/daal
+enabled=1
+gpgcheck=0
+repo_gpgcheck=0
+
+[intel-ipp-repo]
+name=Intel(R) Integrated Performance Primitives
+baseurl=https://yum.repos.intel.com/ipp
+enabled=1
+gpgcheck=0
+repo_gpgcheck=0
+
+[intel-mkl-repo]
+name=Intel(R) Math Kernel Library
+baseurl=https://yum.repos.intel.com/mkl
+enabled=1
+gpgcheck=0
+repo_gpgcheck=0
+
+[intel-tbb-repo]
+name=Intel(R) Threading Building Blocks
+baseurl=https://yum.repos.intel.com/tbb
+enabled=1
+gpgcheck=0
+repo_gpgcheck=0
+
+[intel-mpi-repo]
+name=Intel(R) MPI Library
+baseurl=https://yum.repos.intel.com/mpi
+enabled=1
+gpgcheck=0
+repo_gpgcheck=0
+
+
+
