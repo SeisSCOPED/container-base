@@ -18,7 +18,7 @@ if [ $# -eq 0 ]; then
     echo "Created reverse ports on Stampede2 logins"
     printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
     echo "Welcome to SCOPED Tapis interactive" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols); echo -e "\n"
-    echo  "The Link below will open a Jupyter Notebook" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols); echo -e "\n"
+    echo  "The Link below will open a Jupyter Notebook for the $_tapisAppId app" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols); echo -e "\n"
     echo "http://frontera.tacc.utexas.edu:$LOGIN_PORT/lab?token=$JUPYTER_PWD" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols); echo -e "\n"
     printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' - |  head -c $(tput cols);echo -e "\n"
 
