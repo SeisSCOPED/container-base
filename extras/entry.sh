@@ -1,7 +1,7 @@
 #!/bin/sh
 # entry.sh: decides which startup script to run based on an environment variable. Currently supports apptainer and not apptainer (docker)
 
-if [ -z "$APPTAINER_COMMAND" ]; then
+if [ -z "$_tapisAppId" ]; then
     # APPTAINER_COMMAND is not set, run startup-tacc.sh
     exec /usr/bin/startup-tacc.sh
 else
