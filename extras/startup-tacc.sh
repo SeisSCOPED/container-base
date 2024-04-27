@@ -15,11 +15,12 @@ if [ $# -eq 0 ]; then
     done
     # creating notebook password, giving link
     JUPYTER_PWD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 20 | head -n 1)
-    echo "Created reverse ports on Stampede2 logins"
+    echo "Created reverse ports on login nodes"
     printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
     echo "Welcome to SCOPED Tapis interactive" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols); echo -e "\n"
     echo  "The Link below will open a Jupyter Notebook for the $_tapisAppId app" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols); echo -e "\n"
     echo "http://frontera.tacc.utexas.edu:$LOGIN_PORT/lab?token=$JUPYTER_PWD" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols); echo -e "\n"
+    echo "Make sure the system name in the URL above is correct. If not, log into the correct system with the given login port and jupyter password" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' | head -c $(tput cols); echo -e "\n"
     printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' - |  head -c $(tput cols);echo -e "\n"
 
     NOTEBOOK_ARGS=" --notebook-dir=${WORKDIR} --port=${JUPYTER_PORT} --no-browser --ip=0.0.0.0 --allow-root --NotebookApp.token=${JUPYTER_PWD}"
