@@ -4,7 +4,7 @@ if [ $# -eq 0 ]; then
     NODE_HOSTNAME=`hostname -s` > /dev/null 2>&1
     LOGIN_PORT=`echo $NODE_HOSTNAME | perl -ne 'print (($2+1).$3.$1) if /c\d(\d\d)-(\d)(\d\d)/;'` > /dev/null 2>&1
     STATUS_PORT=$(($LOGIN_PORT + 1))
-    TERM='xterm-256color'
+    export TERM='xterm-256color'
     echo "got login node port $LOGIN_PORT"
     echo "got status node port $STATUS_PORT"
     # create reverse tunnel port to login nodes.  Make one tunnel for each login so the user can just
