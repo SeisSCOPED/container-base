@@ -115,6 +115,8 @@ RUN apt-get update --yes && \
     docker-clean && \
     echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     locale-gen
+
+ENV JUPYTER_PORT 8888
     
 # Configure environment
 ENV CONDA_DIR=/opt/conda \
@@ -198,9 +200,13 @@ RUN apt-get update --yes && \
 # Configure container startup
 ########################################
 
-ENTRYPOINT ["tini", "-s", "-g", "--", "/entry.sh", "/usr/bin/startup.sh"]
 
+ENTRYPOINT ["tini", "-s", "-g", "--", "/entry.sh", "/usr/bin/entry.sh"]
+
+COPY extras/entry.sh /usr/bin/
 COPY extras/startup.sh /usr/bin/
-RUN chmod +x /usr/bin/startup.sh
+COPY extras/startup-tacc.sh /usr/bin/
+
+RUN chmod +x /usr/bin/startup.sh /usr/bin/startup-tacc.sh /usr/bin/entry.sh
 
 WORKDIR "${HOME}"
